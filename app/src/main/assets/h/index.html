@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    <!-- 引入 echarts.js -->
+    <script src="echarts.min.js"></script>
+</head>
+
+<body>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <!-- <button onclick="javaMethod()">javaMethod</button> -->
+    <div id="temp" style="width: 600px;height:400px;"></div>
+    <div id="humidity" style="width: 600px;height:400px;"></div>
+    <div id="light" style="width: 600px;height:400px;"></div>
+    <div id="pm25" style="width: 600px;height:400px;"></div>
+    <div id="co2" style="width: 600px;height:400px;"></div>
+    <div id="main" style="width: 600px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+        var chart1 = echarts.init(document.getElementById('temp'));
+        var chart2 = echarts.init(document.getElementById('humidity'));
+        var chart3 = echarts.init(document.getElementById('light'));
+        var chart4 = echarts.init(document.getElementById('pm25'));
+        var chart5 = echarts.init(document.getElementById('co2'));
+        function javaMethod() {
+            test.jsFun("aaa");
+        }
+
+        // 指定图表的配置项和数据
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            }, "series": [
+                {
+                    name: 'Main', "type": "line",
+                    "data": [7586, 5504, 312, 3729, 373, 7531]
+                }
+            ],
+            "legend": {
+                "show": "true"
+            },
+            "xAxis": { data: [54, 57, 57, 57, 57, 57] },
+            "yAxis": {}
+        };
+
+        co2 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            }, "series": [
+                {
+                    name: 'Co2', "type": "line",
+                    "data": [8247, 8467, 5513, 8189, 393]
+                }
+            ],
+            "legend": {
+                "show": "true"
+            },
+            "xAxis": { data: [55, 58, 01, 04, 07, 08] },
+            "yAxis": {}
+        };
+
+
+        pm25 = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            }, "series": [
+                {
+                    name: 'PM25', "type": "line",
+                    "data": [289]
+                }
+            ],
+            "legend": {
+                "show": "true"
+            },
+            "xAxis": { data: [50, 53, 56, 59, 02, 05] },
+            "yAxis": {}
+        };
+
+        light = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            }, "series": [
+                {
+                    name: '光照', "type": "line",
+                    "data": [815]
+                }
+            ],
+            "legend": {
+                "show": "true"
+            },
+            "xAxis": { data: [50, 53, 56, 59, 02, 05] },
+            "yAxis": {}
+        };
+
+        humidity = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            }, "series": [
+                {
+                    name: '湿度', "type": "line",
+                    "data": [20]
+                }
+            ],
+            "legend": {
+                "show": "true"
+            },
+            "xAxis": { data: [50, 53, 56, 59, 02, 05] },
+            "yAxis": {}
+        };
+
+        temp = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross'
+                }
+            }, "series": [
+                {
+                    name: '温度', "type": "line",
+                    "data": [0]
+                }
+            ],
+            "legend": {
+                "show": "true"
+            },
+            "xAxis": { data: [50, 53, 56, 59, 02, 05] },
+            "yAxis": {}
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        chart1.setOption(temp);
+        chart2.setOption(humidity);
+        chart3.setOption(light);
+        chart4.setOption(pm25);
+        chart5.setOption(co2);
+    </script>
+</body>
+
+</html>
