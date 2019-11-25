@@ -123,11 +123,9 @@ public class MainActivity extends AppCompatActivity {
     private LinkedList<Integer>[] data;
     private LinkedList<String> xVals;
     private SimpleDateFormat simpleDateFormat;
-    private String[] chartType;
     private ViewPager vp;
     private RadioGroup rg;
     private WebView[] webViews;
-    private String[] titles;
 
 
     @Override
@@ -227,9 +225,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        chartType = new String[]{"line", "bar", "pie", "line", "line"};
         triggerType = new String[]{"axis", "axis", "item", "axis", "axis"};
-        titles = new String[]{"温度", "湿度", "光照", "PM25", "Co2"};
         data = new LinkedList[]{new LinkedList<Integer>(), new LinkedList<Integer>(), new LinkedList<Integer>(), new LinkedList<Integer>(), new LinkedList<Integer>()};
         xVals = new LinkedList<>();
         simpleDateFormat = new SimpleDateFormat("ss");
