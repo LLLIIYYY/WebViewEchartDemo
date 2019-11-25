@@ -22,10 +22,53 @@
 
 <body>
     <div id="chart"></div>
+    <script src="./jquery3.4.1.js"></script>
     <script src="echarts.min.js"></script>
     <script>
         var chart = echarts.init(document.getElementById('chart'));
-        function updateInfo(option) {
+        var chartType = ['line', 'bar', 'pie', 'line', 'line'];
+        function initChart(index) {
+            option = {
+                series: {
+                    type: chartType[index],
+                    data: [],
+                    label: {
+                        normal: {
+                            show: 'true',
+                            position: 'top'
+
+                        }
+                    }
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+
+            };
+
+            if (['line', 'bar'].indexOf(chartType[index]) != -1) {
+                option['yAxis'] = {};
+                option['xAxis'] = { 'data': [] };
+                option['tooltip']['trigger'] = 'axis';
+                option['toolbox'] = {
+                    feature: {
+                        magicType: {
+                            type: ['line', 'bar']
+                        }
+                    },
+                    show: 'true'
+                }
+            }
+            chart.setOption(option);
+        }
+        function updateInfo(option, index) {
+            if (['line', 'bar'].indexOf(chartType[index]) == -1) {
+                x = option['xAxis']['data'];
+                for (i = 0; i < option['series']['data'].length; i++) {
+                    option['series']['data'][i] = { 'name': x[i], 'value': option['series']['data'][i] }
+                }
+                delete option['xAxis'];
+            }
             chart.setOption(option);
         }
     </script>

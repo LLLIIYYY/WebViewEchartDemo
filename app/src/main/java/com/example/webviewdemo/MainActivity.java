@@ -4,8 +4,12 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ConsoleMessage;
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
@@ -17,6 +21,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.github.abel533.echarts.AxisPointer;
+import com.github.abel533.echarts.DataZoom;
+import com.github.abel533.echarts.axis.CategoryAxis;
+import com.github.abel533.echarts.axis.ValueAxis;
+import com.github.abel533.echarts.code.Magic;
+import com.github.abel533.echarts.code.PointerType;
+import com.github.abel533.echarts.code.Trigger;
+import com.github.abel533.echarts.feature.MagicType;
+import com.github.abel533.echarts.json.GsonOption;
+import com.github.abel533.echarts.series.Line;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -50,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         EnvBean envBean = gson.fromJson(responses[0], EnvBean.class);
-                        if (data[0].size() > 4) {
+                        if (data[0].size() > 5) {
                             for (int i = 0; i < data.length; i++) {
                                 data[i].removeFirst();
                             }
@@ -73,43 +87,33 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     });
+    private String[] triggerType;
 
     private void updateInfo() {
         for (int i = 0; i < webViews.length; i++) {
-//                            GsonOption gsonOption = new GsonOption();
-//                            gsonOption.yAxis(new ValueAxis());
-//                            gsonOption.xAxis(new CategoryAxis().data(xVals.toArray()));
-//                            Line line = new Line();
-//                            line.data(data[i].toArray());
-//                            line.name(titles[i]);
-//                            line.smooth(true);
-//                            line.tooltip().setTrigger(Trigger.axis);
-//                            line.tooltip().axisPointer(new AxisPointer().type(PointerType.cross));
-//                            gsonOption.series(line);
-//                            gsonOption.legend().show(true);
-//                            webViews[i].loadUrl("javascript:updateInfo(" + gsonOption.toString() + ")");
+//            GsonOption gsonOption = new GsonOption();
+//            gsonOption.yAxis(new ValueAxis());
+//            gsonOption.xAxis(new CategoryAxis().data(xVals.toArray()));
+//            Line line = new Line();
+//            line.data(data[i].toArray());
+//            line.name(titles[i]);
+//            line.smooth(true);
+//            line.tooltip().setTrigger(Trigger.item);
+//            line.tooltip().axisPointer(new AxisPointer().type(PointerType.cross));
+//            gsonOption.toolbox().show(true).feature(new DataZoom(), new MagicType(Magic.bar, Magic.line));
+//            gsonOption.series(line);
+//            gsonOption.legend().show(true);
+//            Log.e(TAG, "updateInfo: " + gsonOption.toString());
+//            webViews[i].loadUrl("javascript:updateInfo(" + gsonOption.toString() + ")");
             String option = "{\n" +
-                    "           tooltip: {\n" +
-                    "                trigger: 'axis',\n" +
-                    "                axisPointer: {\n" +
-                    "                    type: 'cross'\n" +
-                    "                }\n" +
-                    "            }," +
-                    "            \"series\": [\n" +
-                    "                {\n" +
-                    "                    name: '" + titles[i] + "'," +
-                    "                    \"type\": \"" + chartType[i] + "\",\n" +
-                    "                    \"data\": " + data[i].toString() + "\n" +
-                    "                }\n" +
-                    "            ],\n" +
-                    "            \"legend\": {\n" +
-                    "                \"show\": \"true\"\n" +
+                    "            series:{\n" +
+                    "                data:"+data[i].toString()+"\n" +
                     "            },\n" +
-                    "            \"xAxis\": {" +
-                    "                   data: " + xVals.toString() + "},\n" +
-                    "            \"yAxis\": {}\n" +
+                    "            xAxis:{\n" +
+                    "                data:"+xVals.toString()+"\n" +
+                    "            }\n" +
                     "        }";
-            webViews[i].evaluateJavascript("javascript:updateInfo(" + option + ")", null);
+            webViews[i].evaluateJavascript("javascript:updateInfo(" + option + ", "+i+")", null);
         }
     }
 
@@ -144,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
+
             @Override
             public void onPageSelected(int position) {
                 ((RadioButton) rg.getChildAt(position)).setChecked(true);
@@ -175,11 +180,27 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 handler.sendEmptyMessage(0);
+                for (int i = 0; i < webViews.length; i++) {
+                    final int finalI = i;
+                    webViews[i].setWebChromeClient(new WebChromeClient(){
+                        @Override
+                        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                            Log.e(TAG, "onConsoleMessage: "+ finalI +"\t"+consoleMessage.message());
+                            return super.onConsoleMessage(consoleMessage);
+                        }
+
+                        @Override
+                        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                            return super.onJsAlert(view, url, message, result);
+                        }
+                    });
+                    webViews[i].evaluateJavascript("javascript:initChart("+i+")", null);
+                }
                 super.onPageFinished(view, url);
             }
         });
 
-        vp.setOffscreenPageLimit(webViews.length-1);
+        vp.setOffscreenPageLimit(webViews.length - 1);
         vp.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {
@@ -206,7 +227,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        chartType = new String[]{"line", "bar", "line", "line", "line"};
+        chartType = new String[]{"line", "bar", "pie", "line", "line"};
+        triggerType = new String[]{"axis", "axis", "item", "axis", "axis"};
         titles = new String[]{"温度", "湿度", "光照", "PM25", "Co2"};
         data = new LinkedList[]{new LinkedList<Integer>(), new LinkedList<Integer>(), new LinkedList<Integer>(), new LinkedList<Integer>(), new LinkedList<Integer>()};
         xVals = new LinkedList<>();
